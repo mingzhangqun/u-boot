@@ -47,6 +47,7 @@ void watchdog_init(void);
 void set_muxconf_regs(void);
 
 void identify_cpu(void);
+u8 is_cpu_family(u16);
 u32 get_cpu_family(void);
 u32 get_cpu_rev(void);
 u32 get_sku_id(void);
