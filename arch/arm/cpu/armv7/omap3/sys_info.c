@@ -49,11 +49,11 @@ static char *rev_s[CPU_3XX_MAX_REV] = {
 static u8 cpu_revision;
 
 /**
- * Perform architecture specific initialization.
+ * Identify the silicon
  *
  * Currently, it identifies the cpu revision.
  */
-int arch_cpu_init (void)
+void identify_cpu (void)
 {
 	u32 cpuid = 0;
 	struct ctrl_id *id_base;
@@ -77,10 +77,20 @@ int arch_cpu_init (void)
 		if(cpu_revision == 0)
 			cpu_revision = CPU_3XX_ES20;
 	}
-
-	return 0;
 }
 
+/*
+ * Perform architecture specific initialization
+ */
+int arch_cpu_init (void)
+{
+	/* The identification done in s_init is 'lost' due to
+	 * relocation. The variable contents are not same.
+	 * Function identify_cpu() is called again.
+	 */
+	identify_cpu();
+	return 0;
+}
 /*****************************************************************
  * dieid_num_r(void) - read and set die ID
  *****************************************************************/
