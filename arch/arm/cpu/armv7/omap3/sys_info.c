@@ -47,7 +47,6 @@ static char *rev_s[CPU_3XX_MAX_REV] = {
 #endif /* CONFIG_DISPLAY_CPUINFO */
 
 static u16 cpu_family;
-static u16 cpu_id;
 static u8  cpu_revision;
 
 /**
@@ -360,7 +359,7 @@ int print_cpuinfo (void)
 			cpu_s = "3525";
 			break;
 		case OMAP3530:
-			cpu_s = "3530";
+			cpu_s = "3430/3530";
 			break;
 		default:
 			cpu_s = "35XX";
@@ -408,21 +407,25 @@ int print_cpuinfo (void)
 
 	switch (get_device_type()) {
 	case TST_DEVICE:
-		sec_s = "TST";
+		sec_s ="TST";
 		break;
 	case EMU_DEVICE:
-		sec_s = "EMU";
+		sec_s ="EMU";
 		break;
 	case HS_DEVICE:
-		sec_s = "HS";
+		sec_s ="HS";
 		break;
 	case GP_DEVICE:
-		sec_s = "GP";
+		sec_s ="GP";
 		break;
 	default:
-		sec_s = "?";
+		sec_s ="?";
 	}
 
+	/*
+	 * TBD: Revision numbers for AM35x may not be same as OMAP35x.
+	 *      Will need to re-look sometime later.
+	 */
 	printf("%s%s-%s ES%s, CPU-OPP2, L3-165MHz, Max CPU Clock %s\n",
 			cpu_family_s, cpu_s, sec_s,
 			rev_s[get_cpu_rev()], max_clk);
