@@ -329,7 +329,7 @@ int print_cpuinfo (void)
 			cpu_s = "3525";
 			break;
 		case OMAP3530:
-			cpu_s = "3530";
+			cpu_s = "3430/3530";
 			break;
 		default:
 			cpu_s = "35XX";
@@ -392,6 +392,10 @@ int print_cpuinfo (void)
 		sec_s = "?";
 	}
 
+	/*
+	 * TBD: Revision numbers for AM35x may not be same as OMAP35x.
+	 *      Will need to re-look sometime later.
+	 */
 	printf("%s%s-%s ES%s, CPU-OPP2, L3-165MHz, Max CPU Clock %s\n",
 			cpu_family_s, cpu_s, sec_s,
 			rev_s[get_cpu_rev()], max_clk);
