@@ -388,6 +388,10 @@ $(obj)u-boot.kwb:       $(obj)u-boot.bin
 		$(obj)tools/mkimage -n $(CONFIG_SYS_KWD_CONFIG) -T kwbimage \
 		-a $(CONFIG_SYS_TEXT_BASE) -e $(CONFIG_SYS_TEXT_BASE) -d $< $@
 
+$(obj)u-boot.ti:       $(obj)u-boot.bin
+		$(obj)tools/mkimage -T tiimage \
+		-e $(TI_LOAD_ADDR) -n $(TI_DEVICE) -d $< $(obj)$(TI_IMAGE)
+
 $(obj)u-boot.sha1:	$(obj)u-boot.bin
 		$(obj)tools/ubsha1 $(obj)u-boot.bin
 
@@ -1008,6 +1012,7 @@ clobber:	clean
 	@rm -f $(obj)u-boot.kwb
 	@rm -f $(obj)u-boot.imx
 	@rm -f $(obj)u-boot.ubl
+	@rm -f $(obj)$(TI_IMAGE)
 	@rm -f $(obj)tools/{env/crc32.c,inca-swap-bytes}
 	@rm -f $(obj)arch/powerpc/cpu/mpc824x/bedbug_603e.c
 	@rm -fr $(obj)include/asm/proc $(obj)include/asm/arch $(obj)include/asm
