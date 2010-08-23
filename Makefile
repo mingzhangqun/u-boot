@@ -990,7 +990,9 @@ versatileab_config	\
 versatilepb_config :	unconfig
 	@board/armltd/versatile/split_by_variant.sh $@
 
-ti8168_evm_min_config:	unconfig
+ti8168_evm_min_config	\
+ti8168_evm_nand_config	\
+ti8168_evm_spi_config:	unconfig
 	@mkdir -p $(obj)include
 	@echo "#define CONFIG_TI81XX"	>>$(obj)include/config.h
 	@echo "#define CONFIG_TI816X"	>>$(obj)include/config.h
@@ -998,6 +1000,16 @@ ti8168_evm_min_config:	unconfig
 		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
 		echo "#define CONFIG_NO_ETH"    >>$(obj)include/config.h ; \
 		echo "Setting up TI8168 minimal build..." ; \
+	elif [ "$(findstring _nand_,$@)" ] ; then \
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NAND_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
+		echo "Setting up TI8168 NAND build..." ; \
+	elif [ "$(findstring _spi_,$@)" ] ; then \
+		echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_SPI_BOOT"    >>$(obj)include/config.h ; \
+		echo "#define CONFIG_NO_ETH" >>$(obj)include/config.h ; \
+		echo "Setting up TI8168 SPI build..." ; \
 	fi;
 	@$(MKCONFIG) -a ti8168_evm arm armv7 ti8168 ti ti81xx
 
