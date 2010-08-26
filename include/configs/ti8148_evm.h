@@ -17,9 +17,14 @@
 #ifndef __CONFIG_TI8148_EVM_H
 #define __CONFIG_TI8148_EVM_H
 
-/* In the 1st stage we have just 110K, so cut down wherever possible */
-#ifdef CONFIG_TI814X_MIN_CONFIG
+#define CONFIG_ARMV7
 
+#include <asm/arch/cpu.h>		/* get chip and board defs */
+#include <asm/arch/hardware.h>
+
+#ifndef CONFIG_TI814X_MIN_CONFIG
+# include <config_cmd_default.h>
+#else
 # define CONFIG_CMD_MEMORY	/* for mtest */
 # undef CONFIG_GZIP
 # undef CONFIG_ZLIB
@@ -27,15 +32,11 @@
 # undef CONFIG_BOOTM_NETBSD
 # undef CONFIG_BOOTM_RTEMS
 # undef CONFIG_SREC
-//# undef CONFIG_XYZMODEM
-# define CONFIG_CMD_LOADB	/* loadb			*/
-# define CONFIG_CMD_LOADY	/* loady */
-# define CONFIG_SETUP_PLL
-# define CONFIG_TI814X_CONFIG_DDR
+# undef CONFIG_XYZMODEM
+
 # define CONFIG_ENV_SIZE			0x400
 # define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-# define CONFIG_SYS_PROMPT		"TI-MIN#"
-#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+# define CONFIG_SYS_PROMPT		"TI#"
 # define CONFIG_EXTRA_ENV_SETTINGS \
 	"verify=yes\0" \
 	"bootcmd=nand read 0x81000000 0x20000 0x40000; go 0x81000000\0" \
@@ -63,6 +64,25 @@
 
 #define CONFIG_SYS_AUTOLOAD		"yes"
 
+
+#endif
+
+/*
+ * Size of malloc() pool
+ */
+#define CONFIG_ENV_SIZE			0x400
+#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
+#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
+						   initial data */
+
+//#define CONFIG_TI814X_EVM_DDR2			/* Configure DDR2 in U-Boot */
+#define CONFIG_MISC_INIT_R		1
+
+#define CONFIG_BOOTDELAY		3	/* set to negative value for no autoboot */
+#define CONFIG_SYS_AUTOLOAD		"no"
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"verify=yes\0" \
+	"bootfile=uImage\0" \
 
 /*
  * Miscellaneous configurable options
@@ -144,7 +164,7 @@
 #endif
 
 #if defined(CONFIG_SYS_NO_FLASH)
-# define CONFIG_ENV_IS_NOWHERE
+#define CONFIG_ENV_IS_NOWHERE
 #endif
 
 /* NAND support */
@@ -168,23 +188,15 @@
 #  define CONFIG_SYS_MAX_FLASH_SECT	520		/* max number of sectors in a chip */
 #  define CONFIG_SYS_MAX_FLASH_BANKS	2		/* max number of flash banks */
 #  define CONFIG_SYS_MONITOR_LEN	(256 << 10)	/* Reserve 2 sectors */
-#  define CONFIG_SYS_FLASH_BASE		boot_flash_base
+#  define CONFIG_SYS_FLASH_BASE		PISMO1_NAND_BASE
 #  define CONFIG_SYS_MONITOR_BASE	CONFIG_SYS_FLASH_BASE
 #  define MNAND_ENV_OFFSET		0x260000	/* environment starts here */
-#  define CONFIG_SYS_ENV_SECT_SIZE	boot_flash_sec
-#  define CONFIG_ENV_OFFSET		boot_flash_off
+#  define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
+#  define CONFIG_ENV_OFFSET		MNAND_ENV_OFFSET
 #  define CONFIG_ENV_ADDR		MNAND_ENV_OFFSET
 #  define CONFIG_CMD_SAVEENV
 #  define CONFIG_NOFLASH
 #  undef CONFIG_ENV_IS_NOWHERE
-# endif
-
-# ifndef __ASSEMBLY__
-extern unsigned int boot_flash_base;
-extern volatile unsigned int boot_flash_env_addr;
-extern unsigned int boot_flash_off;
-extern unsigned int boot_flash_sec;
-extern unsigned int boot_flash_type;
 # endif
 #endif /* NAND support */
 
@@ -263,6 +275,11 @@ extern unsigned int boot_flash_type;
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
+
+/* additions for new relocation code, must added to all boards */
+#undef CONFIG_SYS_ARM_WITHOUT_RELOC /* This board is tested with relocation support */
+#define CONFIG_SYS_SDRAM_BASE		PHYS_SDRAM_1
+#define CONFIG_SYS_INIT_SP_ADDR		((SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE) - CONFIG_SYS_GBL_DATA_SIZE)
 
 #endif	  /* ! __CONFIG_TI8148_EVM_H */
 
