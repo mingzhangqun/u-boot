@@ -61,12 +61,16 @@ int mmc_set_dev(int dev_num)
 	case 1:
 		mmc_base = (hsmmc_t *)OMAP_HSMMC1_BASE;
 		break;
+#ifdef OMAP_HSMMC2_BASE
 	case 2:
 		mmc_base = (hsmmc_t *)OMAP_HSMMC2_BASE;
 		break;
+#endif
+#ifdef OMAP_HSMMC3_BASE
 	case 3:
 		mmc_base = (hsmmc_t *)OMAP_HSMMC3_BASE;
 		break;
+#endif
 	default:
 		mmc_base = (hsmmc_t *)OMAP_HSMMC1_BASE;
 		return 1;
