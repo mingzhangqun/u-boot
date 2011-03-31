@@ -53,7 +53,7 @@ static void usb_pll_config(void);
 #endif
 
 static void unlock_pll_control_mmr(void);
-static void cpsw_pad_config(u32 instance);
+static void cpsw_pad_config(void);
 /*
  * spinning delay to use before udelay works
  */
@@ -72,8 +72,13 @@ int board_init(void)
 
 	/* Do the required pin-muxing before modules are setup */
 	set_muxconf_regs();
-	cpsw_pad_config(0);
 
+	if (PG2_1 == get_cpu_rev()) {
+		/* setup RMII_REFCLK to be sourced from audio_pll */
+		__raw_writel(0x4,RMII_REFCLK_SRC);
+		/*program GMII_SEL register for RGMII mode */
+		__raw_writel(0x30a,GMII_SEL);
+	}
 	/* Get Timer and UART out of reset */
 
 	/* UART softreset */
@@ -483,7 +488,7 @@ void per_clocks_enable(void)
 	__raw_writel(0x2, CM_ETHERNET_CLKSTCTRL);
 	__raw_writel(0x2, CM_ALWON_ETHERNET_0_CLKCTRL);
 	while((__raw_readl(CM_ALWON_ETHERNET_0_CLKCTRL) & 0x30000) != 0);
-
+	__raw_writel(0x2, CM_ALWON_ETHERNET_1_CLKCTRL);
 	/* HSMMC */
 	__raw_writel(0x2, CM_ALWON_HSMMC_CLKCTRL);
 	while(__raw_readl(CM_ALWON_HSMMC_CLKCTRL) != 0x2);
@@ -518,9 +523,33 @@ void prcm_init(u32 in_ddr)
 #endif
 }
 
-static void cpsw_pad_config(u32 instance)
-{
 #define PADCTRL_BASE 0x48140000
+
+#define PAD204_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B2c))
+#define PAD205_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B30))
+#define PAD206_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B34))
+#define PAD207_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B38))
+#define PAD208_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B3c))
+#define PAD209_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B40))
+#define PAD210_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B44))
+#define PAD211_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B48))
+#define PAD212_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B4c))
+#define PAD213_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B50))
+#define PAD214_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B54))
+#define PAD215_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B58))
+#define PAD216_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B5c))
+#define PAD217_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B60))
+#define PAD218_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B64))
+#define PAD219_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B68))
+#define PAD220_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B6c))
+#define PAD221_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B70))
+#define PAD222_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B74))
+#define PAD223_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B78))
+#define PAD224_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B7c))
+#define PAD225_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B80))
+#define PAD226_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B84))
+#define PAD227_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B88))
+
 #define PAD232_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0B9C))
 #define PAD233_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA0))
 #define PAD234_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0BA4))
@@ -549,14 +578,23 @@ static void cpsw_pad_config(u32 instance)
 #define PAD257_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C00))
 #define PAD258_CNTRL  (*(volatile unsigned int *)(PADCTRL_BASE + 0x0C04))
 
-	if (instance == 0) {
-		volatile u32 val = 0;
-		val = PAD232_CNTRL;
-		PAD232_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
-		val = PAD233_CNTRL;
-		PAD233_CNTRL = (volatile unsigned int) (BIT(19) | BIT(17) | BIT(0));
-		val = PAD234_CNTRL;
-		PAD234_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(17) | BIT(0));
+
+static void cpsw_pad_config()
+{
+	volatile u32 val = 0;
+
+	/*configure pin mux for rmii_refclk,mdio_clk,mdio_d */
+	val = PAD232_CNTRL;
+	PAD232_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+	val = PAD233_CNTRL;
+	PAD233_CNTRL = (volatile unsigned int) (BIT(19) | BIT(17) | BIT(0));
+	val = PAD234_CNTRL;
+	PAD234_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(17) |
+			BIT(0));
+
+	/*For PG1.0 we only support GMII Mode, setup gmii0/gmii1 pins here*/
+	if (PG1_0 == get_cpu_rev()) {
+		/* setup gmii0 pins, pins235-258 in function mode 1 */
 		val = PAD235_CNTRL;
 		PAD235_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(0));
 		val = PAD236_CNTRL;
@@ -605,6 +643,108 @@ static void cpsw_pad_config(u32 instance)
 		PAD257_CNTRL = (volatile unsigned int) (BIT(0));
 		val = PAD258_CNTRL;
 		PAD258_CNTRL = (volatile unsigned int) (BIT(0));
+
+		/* setup gmii1 pins, pins204-227 in function mode 2 */
+		val = PAD204_CNTRL;
+		PAD204_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD205_CNTRL;
+		PAD205_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD206_CNTRL;
+		PAD206_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD207_CNTRL;
+		PAD207_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD208_CNTRL;
+		PAD208_CNTRL = (volatile unsigned int) (BIT(19) | BIT(18) | BIT(1));
+		val = PAD209_CNTRL;
+		PAD209_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD210_CNTRL;
+		PAD210_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD211_CNTRL;
+		PAD211_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD212_CNTRL;
+		PAD212_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD213_CNTRL;
+		PAD213_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD214_CNTRL;
+		PAD214_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD215_CNTRL;
+		PAD215_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD216_CNTRL;
+		PAD216_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD217_CNTRL;
+		PAD217_CNTRL = (volatile unsigned int) (BIT(18) | BIT(1));
+		val = PAD218_CNTRL;
+		PAD218_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD219_CNTRL;
+		PAD219_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD220_CNTRL;
+		PAD220_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD221_CNTRL;
+		PAD221_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD222_CNTRL;
+		PAD222_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD223_CNTRL;
+		PAD223_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD224_CNTRL;
+		PAD224_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD225_CNTRL;
+		PAD225_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD226_CNTRL;
+		PAD226_CNTRL = (volatile unsigned int) (BIT(1));
+		val = PAD227_CNTRL;
+		PAD227_CNTRL = (volatile unsigned int) (BIT(1));
+
+	} else {/*setup rgmii0/rgmii1 pins here*/
+		/* In this case we enable rgmii_en bit in GMII_SEL register and
+		 * still program the pins in gmii mode: gmii0 pins in mode 1*/
+		val = PAD235_CNTRL; /*rgmii0_rxc*/
+		PAD235_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD236_CNTRL; /*rgmii0_rxctl*/
+		PAD236_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD237_CNTRL; /*rgmii0_rxd[2]*/
+		PAD237_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD238_CNTRL; /*rgmii0_txctl*/
+		PAD238_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD239_CNTRL; /*rgmii0_txc*/
+		PAD239_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD240_CNTRL; /*rgmii0_txd[0]*/
+		PAD240_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD241_CNTRL; /*rgmii0_rxd[0]*/
+		PAD241_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD242_CNTRL; /*rgmii0_rxd[1]*/
+		PAD242_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD243_CNTRL; /*rgmii1_rxctl*/
+		PAD243_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD244_CNTRL; /*rgmii0_rxd[3]*/
+		PAD244_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD245_CNTRL; /*rgmii0_txd[3]*/
+		PAD245_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD246_CNTRL; /*rgmii0_txd[2]*/
+		PAD246_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD247_CNTRL; /*rgmii0_txd[1]*/
+		PAD247_CNTRL = (volatile unsigned int) BIT(0);
+		val = PAD248_CNTRL; /*rgmii1_rxd[1]*/
+		PAD248_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD249_CNTRL; /*rgmii1_rxc*/
+		PAD249_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD250_CNTRL; /*rgmii1_rxd[3]*/
+		PAD250_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD251_CNTRL; /*rgmii1_txd[1]*/
+		PAD251_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD252_CNTRL; /*rgmii1_txctl*/
+		PAD252_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD253_CNTRL; /*rgmii1_txd[0]*/
+		PAD253_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD254_CNTRL; /*rgmii1_txd[2]*/
+		PAD254_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD255_CNTRL; /*rgmii1_txc*/
+		PAD255_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD256_CNTRL; /*rgmii1_rxd[0]*/
+		PAD256_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
+		val = PAD257_CNTRL; /*rgmii1_txd[3]*/
+		PAD257_CNTRL = (volatile unsigned int) (BIT(0));
+		val = PAD258_CNTRL; /*rgmii1_rxd[2]*/
+		PAD258_CNTRL = (volatile unsigned int) (BIT(18) | BIT(0));
 	}
 }
 
@@ -682,6 +822,10 @@ static void evm_phy_init(char *name, int addr)
 {
 	unsigned short val;
 	unsigned int   cntr = 0;
+
+	miiphy_reset(name, addr);
+
+	udelay(100000);
 
 	/* Enable PHY to clock out TX_CLK */
 	miiphy_read(name, addr, PHY_CONF_REG, &val);
@@ -789,6 +933,8 @@ int board_eth_init(bd_t *bis)
 	u_int8_t mac_addr[6];
 	u_int32_t mac_hi,mac_lo;
 
+	cpsw_pad_config();
+
 	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
 		printf("<ethaddr> not set. Reading from E-fuse\n");
 		/* try reading mac address from efuse */
@@ -811,6 +957,11 @@ int board_eth_init(bd_t *bis)
 		cpsw_eth_set_mac_addr(mac_addr);
 	} else {
 		printf("Caution:using static MACID!! Set <ethaddr> variable\n");
+	}
+
+	if (PG1_0 != get_cpu_rev()) {
+		cpsw_slaves[0].phy_id = 0;
+		cpsw_slaves[1].phy_id = 1;
 	}
 
 	return cpsw_register(&cpsw_data);
