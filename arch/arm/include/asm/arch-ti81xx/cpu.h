@@ -438,6 +438,15 @@
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
 
+/* The SRAM size of 109 KB is obtained after excluding the first 1 KB of
+ * fast secure SRAM due to hardware limitation and the last 18 KB of OCMC
+ * sram which is reserved for stack.
+ */
+#ifdef CONFIG_AM335X
+#define SRAM0_SIZE			(0x1B400)
+#define SRAM_GPMC_STACK_SIZE		(0x40)
+#endif
+
 /* GPMC related */
 #define GPMC_CONFIG_CS0			(0x60)
 #define GPMC_CONFIG_CS0_BASE		(GPMC_BASE + GPMC_CONFIG_CS0)
