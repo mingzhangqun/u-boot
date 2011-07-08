@@ -42,12 +42,17 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TIOCP_CFG_REG		0x10
 #define TCLR_REG		0x38
 
+/* CPLD registers */
+#define CFG_REG			0x10
+
 /*
  * I2C Address of various board
  */
 #define I2C_BASE_BOARD_ADDR	0x50
 #define I2C_DAUGHTER_BOARD_ADDR 0x51
 #define I2C_LCD_BOARD_ADDR	0x52
+
+#define I2C_CPLD_ADDR		0x35
 
 struct board_id_header {
 	unsigned int  header;
@@ -208,22 +213,23 @@ unsigned char get_daughter_board_id(void)
 	return daughter_board_id;
 }
 
-unsigned short get_gp_profile(void)
+static unsigned char daughter_board_profile = PROFILE_NONE;
+static void detect_daughter_board_profile(void)
 {
-	/*
-	* TODO : update with CPLD/DIN switch read and profile
-	* detection logic
-	*/
-	return PROFILE_0;
+	unsigned short val;
+
+	if (i2c_probe(I2C_CPLD_ADDR))
+		return;
+
+	if (i2c_read(I2C_CPLD_ADDR, CFG_REG, 1, (unsigned char *)(&val), 2))
+		return;
+
+	daughter_board_profile = 1 << (val & 0x7);
 }
 
-unsigned short get_ia_profile(void)
+unsigned char get_daughter_board_profile(void)
 {
-	/*
-	* TODO : update with CPLD/DIN switch read and profile
-	* detection logic
-	*/
-	return PROFILE_0;
+	return daughter_board_profile;
 }
 
 /*
@@ -256,25 +262,7 @@ int board_min_init(void)
 #else
 int board_evm_init(void)
 {
-	unsigned short profile = PROFILE_NONE;
-
-	detect_daughter_board();
-
-	switch (daughter_board_id) {
-	case GP_DAUGHTER_BOARD:
-		profile = get_gp_profile();
-		break;
-
-	case IA_DAUGHTER_BOARD:
-		profile = get_ia_profile();
-		break;
-
-	case IPP_DAUGHTER_BOARD:
-		profile = PROFILE_0;
-		break;
-	};
-
-	configure_evm_pin_mux(daughter_board_id, profile);
+	configure_evm_pin_mux(daughter_board_id, daughter_board_profile);
 
 	/* mach type passed to kernel */
 	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
@@ -288,15 +276,23 @@ int board_evm_init(void)
 
 int board_init(void)
 {
-	#ifdef CONFIG_AM335X_MIN_CONFIG
-		board_min_init();
-	#else
-		board_evm_init();
-	#endif
+	/* Configure the i2c0 pin mux */
+	enable_i2c0_pin_mux();
 
-		gpmc_init();
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
-		return 0;
+	detect_daughter_board();
+
+	detect_daughter_board_profile();
+
+#ifdef CONFIG_AM335X_MIN_CONFIG
+	board_min_init();
+#else
+	board_evm_init();
+#endif
+	gpmc_init();
+
+	return 0;
 }
 
 /* Display the board info */
@@ -311,6 +307,19 @@ int checkboard(void)
 	else
 		printf("board: No daughter card connected");
 
+#ifdef CONFIG_AM335X_MIN_CONFIG
+#ifdef CONFIG_NAND
+	if ((daughter_board_id == GP_DAUGHTER_BOARD) &&
+		((daughter_board_profile  == PROFILE_2) ||
+			(daughter_board_profile == PROFILE_3)))
+		printf("NAND boot: Profile setting is wrong!!");
+#endif
+#ifdef CONFIG_NOR
+	if ((daughter_board_id != GP_DAUGHTER_BOARD) ||
+		(daughter_board_profile != PROFILE_3))
+		printf("NOR boot: Profile setting is wrong!!");
+#endif
+#endif
 	return 0;
 }
 
