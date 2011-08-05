@@ -45,5 +45,4 @@ extern void configure_evm_pin_mux(unsigned char daughter_board_id,
 					unsigned short daughter_board_profile,
 					int daughter_board_flag);
 
-extern unsigned char get_daughter_board_id(void);
 #endif/*__COMMON_DEF_H__ */
