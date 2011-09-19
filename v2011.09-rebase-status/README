@@ -2,6 +2,17 @@ This directory holds merge conflicts that were encountered when rebasing from th
 staging tree (with Joel's fixes to make second stage working) to v2011.09-rc1 in mainline.
 
 Status of rebase:
+
+Sep 19:
+From the below Sep 17 changes, I pulled all post v2009-rc1 patches from Sandeep's next tree
+There were sever merge conflicts with i2c so I handpicked 24 out of the 40 odd commits
+These included:
+- Simon's SPL patches
+- GPIO framework migration + fixes to omap_gpio_dataout
+
+For now I will hug these patches, they should disappear on the next rebase.
+
+
 Sep 17: All merge conflicts resolved, not build tested.
 
 This could potentially break the second stage fixes. The idea behind rebasing is to pull
@@ -9,3 +20,8 @@ in all the latest SPL and arm fixes to start off on a good base for the first st
 However after this rebase, second stage might need work as well depending on what changed.
 
 
+Dev Status:
+
+v2011.09-rc1+gpio+spl/nospl -	second stage working, first stage (SPL) tbd
+
+v2011.06					-	second stage working, first stage (min config) incompatible
