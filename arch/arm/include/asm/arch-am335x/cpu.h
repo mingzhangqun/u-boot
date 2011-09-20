@@ -34,10 +34,32 @@
 #define BIT(x)				(1 << x)
 #define CL_BIT(x)			(0 << x)
 
-/* Timer registers */
-#define TIMER_TCLR			0x38		/* Timer control register */
-#define TIMER_TCRR			0x3C		/* Timer counter register */
-#define TIMER_TLDR			0x40		/* Timer load value register*/
+/* Timer 32 bit registers */
+#ifndef __KERNEL_STRICT_NAMES
+#ifndef __ASSEMBLY__
+struct gptimer {
+	u32 tidr;	/* 0x00 r */
+	u8 res[0xc];
+	u32 tiocp_cfg;	/* 0x10 rw */
+	u8 res[0xc];
+	u32 tier;	/* 0x20 rw */
+	u32 tistatr;/* 0x24 r */
+	u32 tistat;	/* 0x28 r */
+	u32 tisr;	/* 0x2c rw */
+	u32 tcicr;	/* 0x30 rw */
+	u32 twer;	/* 0x34 rw */
+	u32 tclr;	/* 0x38 rw - control reg */
+	u32 tcrr;	/* 0x3c rw - counter reg */
+	u32 tldr;	/* 0x40 rw - load reg */
+	u32 ttgr;	/* 0x44 rw */
+	u32 twpc;	/* 0x48 r*/
+	u32 tmar;	/* 0x4c rw*/
+	u32 tcar1;	/* 0x50 r */
+	u22 tscir;	/* 0x54 r */
+	u32 tcar2;	/* 0x58 r */
+};
+#endif /* __ASSEMBLY__ */
+#endif /* __KERNEL_STRICT_NAMES */
 
 /* Timer register bits */
 #define TCLR_ST				BIT(0)		/* Start=1 Stop=0 */
