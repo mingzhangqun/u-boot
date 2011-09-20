@@ -39,9 +39,9 @@
 #ifndef __ASSEMBLY__
 struct gptimer {
 	u32 tidr;	/* 0x00 r */
-	u8 res[0xc];
+	u8 res1[0xc];
 	u32 tiocp_cfg;	/* 0x10 rw */
-	u8 res[0xc];
+	u8 res2[0xc];
 	u32 tier;	/* 0x20 rw */
 	u32 tistatr;/* 0x24 r */
 	u32 tistat;	/* 0x28 r */
@@ -55,7 +55,7 @@ struct gptimer {
 	u32 twpc;	/* 0x48 r*/
 	u32 tmar;	/* 0x4c rw*/
 	u32 tcar1;	/* 0x50 r */
-	u22 tscir;	/* 0x54 r */
+	u32 tscir;	/* 0x54 r */
 	u32 tcar2;	/* 0x58 r */
 };
 #endif /* __ASSEMBLY__ */
@@ -88,10 +88,11 @@ struct gptimer {
 
 /* Reset control */
 #ifdef CONFIG_AM335X
-#define PRM_DEVICE_RSTCTRL		(PRCM_BASE + 0x0F00)
+#define PRM_RSTCTRL		(PRCM_BASE + 0x0F00)
 #else
-#define PRM_DEVICE_RSTCTRL		(PRCM_BASE + 0x00A0)
+#define PRM_RSTCTRL		(PRCM_BASE + 0x00A0)
 #endif
+#define PRM_RSTCTRL_RESET	0x01
 
 /* TI816X specific bits for PRM_DEVICE module */
 #define GLOBAL_RST_COLD			BIT(1)
