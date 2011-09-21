@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 #include <common.h>
+#include <asm/io.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/hardware.h>
@@ -104,7 +105,7 @@ static void per_clocks_enable(void)
 
 static void mpu_pll_config(void)
 {
-	u32 clkmode, clksel, div_m2, idlest_dpll;
+	u32 clkmode, clksel, div_m2;
 
 	clkmode = __raw_readl(CM_CLKMODE_DPLL_MPU);
 	clksel = __raw_readl(CM_CLKSEL_DPLL_MPU);
@@ -131,7 +132,7 @@ static void mpu_pll_config(void)
 
 static void core_pll_config(void)
 {
-	u32 clkmode, clksel, div_m4, div_m5, div_m6, idlest_dpll;
+	u32 clkmode, clksel, div_m4, div_m5, div_m6;
 
 	clkmode = __raw_readl(CM_CLKMODE_DPLL_CORE);
 	clksel = __raw_readl(CM_CLKSEL_DPLL_CORE);
@@ -169,7 +170,7 @@ static void core_pll_config(void)
 
 static void per_pll_config(void)
 {
-	u32 clkmode, clksel, div_m2, idlest_dpll;
+	u32 clkmode, clksel, div_m2;
 
 	clkmode = __raw_readl(CM_CLKMODE_DPLL_PER);
 	clksel = __raw_readl(CM_CLKSEL_DPLL_PER);
@@ -196,7 +197,7 @@ static void per_pll_config(void)
 
 static void ddr_pll_config(void)
 {
-	u32 clkmode, clksel, div_m2, idlest_dpll;
+	u32 clkmode, clksel, div_m2;
 
 	clkmode = __raw_readl(CM_CLKMODE_DPLL_DDR);
 	clksel = __raw_readl(CM_CLKSEL_DPLL_DDR);

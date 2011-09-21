@@ -55,20 +55,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define TCLR_REG		0x38
 
 static volatile int board_id = GP_BOARD;
-static unsigned char daughter_board_connected = FALSE;
+static unsigned char daughter_board_connected;
 static unsigned char profile = PROFILE_NONE;
-
-static void init_timer(void)
-{
-	/* Reset the Timer */
-	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
-
-	/* Wait until the reset is done */
-	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
-
-	/* Start the Timer */
-	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
-}
 
 int dram_init(void)
 {
@@ -85,10 +73,10 @@ static void Data_Macro_Config(int dataMacroNum)
 {
 	u32 BaseAddrOffset;
 
-	if (dataMacroNum == 0)
-		BaseAddrOffset = 0x00;
-	else if (dataMacroNum == 1)
+	if (dataMacroNum == 1)
 		BaseAddrOffset = 0xA4;
+	else
+		BaseAddrOffset = 0x00;
 
 	__raw_writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
 			|(DDR2_RD_DQS<<10)|(DDR2_RD_DQS<<0)),
@@ -145,19 +133,7 @@ static void Cmd_Macro_Config(void)
 	__raw_writel(DDR2_INVERT_CLKOUT, CMD2_INVERT_CLKOUT_0);
 }
 
-static void config_vtp(void)
-{
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
-			VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
-			VTP0_CTRL_REG);
-	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
-			VTP0_CTRL_REG);
-
-	/* Poll for READY */
-	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
-}
-
+#ifdef CONFIG_AM335X_EVM_IS_13x13
 static void config_emif(void)
 {
 	u32 i;
@@ -213,6 +189,48 @@ static void config_emif(void)
 	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 }
 
+static void config_am335x_mddr(void)
+{
+	int data_macro_0 = 0;
+	int data_macro_1 = 1;
+
+	enable_ddr_clocks();
+
+	Cmd_Macro_Config();
+
+	Data_Macro_Config(data_macro_0);
+	Data_Macro_Config(data_macro_1);
+
+	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
+	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
+
+	/* set IO control registers */
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
+	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
+
+	__raw_writel(__raw_readl(DDR_IO_CTRL) | 0x10000000, DDR_IO_CTRL);
+	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
+
+	config_emif();	/* vtp enable is here */
+}
+
+#else /* !CONFIG_AM335X_EVM_IS_13x13 */
+static void config_vtp(void)
+{
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
+			VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
+			VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
+			VTP0_CTRL_REG);
+
+	/* Poll for READY */
+	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
+}
+
 static void config_emif_ddr2(void)
 {
 	u32 i;
@@ -249,34 +267,6 @@ static void config_emif_ddr2(void)
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
-static void config_am335x_mddr(void)
-{
-	int data_macro_0 = 0;
-	int data_macro_1 = 1;
-
-	enable_ddr_clocks();
-
-	Cmd_Macro_Config();
-
-	Data_Macro_Config(data_macro_0);
-	Data_Macro_Config(data_macro_1);
-
-	__raw_writel(PHY_RANK0_DELAY, DATA0_RANK0_DELAYS_0);
-	__raw_writel(PHY_RANK0_DELAY, DATA1_RANK0_DELAYS_0);
-
-	/* set IO control registers */
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD1_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_CMD2_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA0_IOCTRL);
-	__raw_writel(DDR_IOCTRL_VALUE, DDR_DATA1_IOCTRL);
-
-	__raw_writel(__raw_readl(DDR_IO_CTRL) | 0x10000000, DDR_IO_CTRL);
-	__raw_writel(__raw_readl(DDR_CKE_CTRL) | 0x00000001, DDR_CKE_CTRL);
-
-	config_emif();	/* vtp enable is here */
-}
-
 /*  void DDR2_EMIF_Config(void); */
 static void config_am335x_ddr2(void)
 {
@@ -306,15 +296,7 @@ static void config_am335x_ddr2(void)
 
 	config_emif_ddr2();
 }
-
-static void config_am335x_ddr(void)
-{
-#if	(CONFIG_AM335X_EVM_IS_13x13 ==1)
-	config_am335x_mddr(); /* Do DDR settings for 13x13 */
-#else
-	config_am335x_ddr2();
 #endif
-}
 
 /*
  * early system init of muxing and clocks.
@@ -333,21 +315,23 @@ void s_init(u32 in_ddr)
 	while(__raw_readl(WDT_WWPS) != 0x0);
 
 	/* Setup the PLLs and the clocks for the peripherals */
-#ifdef CONFIG_SETUP_PLL
 	pll_init();
-#endif
 
-#ifdef CONFIG_AM335X_CONFIG_DDR
-	if (!in_ddr)
-		config_am335x_ddr();
+	if (!in_ddr) {
+#ifdef CONFIG_AM335X_EVM_IS_13x13
+		config_am335x_mddr(); /* Do DDR settings for 13x13 */
+#else
+		config_am335x_ddr2();
 #endif
+	}
 }
 
 /*
- * Basic board specific setup
+ * Basic board specific setup.  We have different versions
+ * of this function for SPL and regular U-Boot.
  */
-#ifdef CONFIG_AM335X_MIN_CONFIG
-int board_min_init(void)
+#ifdef CONFIG_SPL_BUILD
+static int real_board_init(void)
 {
 	u32 regVal;
 	u32 uart_base = DEFAULT_UART_BASE;
@@ -364,13 +348,19 @@ int board_min_init(void)
 	regVal |= UART_SMART_IDLE_EN;
 	__raw_writel(regVal, (uart_base + UART_SYSCFG_OFFSET));
 
-	/* Initialize the Timer */
-	init_timer();
+	/* Initialize the Timer.  Start with a reset. */
+	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
+
+	/* Wait until the reset is done */
+	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
+
+	/* Start the Timer */
+	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
 
 	return 0;
 }
 #else
-int board_evm_init(void)
+static int real_board_init(void)
 {
 	/* mach type passed to kernel */
 	if (board_id == IA_BOARD)
@@ -385,6 +375,17 @@ int board_evm_init(void)
 }
 #endif
 
+int board_init(void)
+{
+
+	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
+
+	real_board_init();
+	gpmc_init();
+
+	return 0;
+}
+
 #if defined(CONFIG_GENERIC_MMC) && !defined(CONFIG_SPL_BUILD)
 int board_mmc_init(bd_t *bis)
 {
@@ -393,21 +394,6 @@ int board_mmc_init(bd_t *bis)
 }
 #endif
 
-int board_init(void)
-{
-
-	configure_evm_pin_mux(board_id, profile, daughter_board_connected);
-
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	board_min_init();
-#else
-	board_evm_init();
-#endif
-
-	gpmc_init();
-
-	return 0;
-}
 
 /* Display the board info */
 int checkboard(void)

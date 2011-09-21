@@ -36,12 +36,6 @@
 #define UART2_BASE			0x48024000
 #define UART3_BASE			0x481A6000
 
-/* McSPI register */
-/* In ti814x the following address if for MCSPI0 */
-#define OMAP3_MCSPI1_BASE		0x48030000
-/* TODO Cross check and move to cpu.h or the config file */
-#define OMAP3_MCSPI_MAX_FREQ		48000000
-
 /* DM Timer base addresses */
 #define DM_TIMER0_BASE			0x4802C000
 #define DM_TIMER1_BASE			0x4802E000

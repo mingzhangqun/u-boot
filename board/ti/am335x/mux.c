@@ -14,7 +14,7 @@
  */
 #include <config.h>
 #include "common_def.h"
-#include <asm/arch/hardware.h>
+#include <asm/io.h>
 
 #define MUX_CFG(value, offset)	\
 	__raw_writel(value, (CTRL_BASE + offset));
@@ -267,11 +267,13 @@ static struct module_pin_mux uart0_pin_mux[] = {
 	{-1},
 };
 
+#if 0
 static struct module_pin_mux uart3_pin_mux[] = {
 	{OFFSET(spi0_cs1), (MODE(1) | PULLUDEN | RXACTIVE)},	/* UART3_RXD */
 	{OFFSET(ecap0_in_pwm0_out), (MODE(1) | PULLUDEN)},	/* UART3_TXD */
 	{-1},
 };
+#endif
 
 #ifdef CONFIG_NAND
 static struct module_pin_mux nand_pin_mux[] = {
@@ -294,11 +296,13 @@ static struct module_pin_mux nand_pin_mux[] = {
 };
 #endif
 
+#if 0
 static struct module_pin_mux i2c0_pin_mux[] = {
 	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
 	{OFFSET(i2c0_scl), (MODE(0) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_SCLK */
 	{-1},
 };
+#endif
 
 static struct module_pin_mux i2c1_pin_mux[] = {
 	{OFFSET(spi0_d1), (MODE(2) | RXACTIVE | PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
@@ -343,6 +347,7 @@ static struct module_pin_mux rgmii2_pin_mux[] = {
 	{-1},
 };
 
+#if 0
 static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mii1_rxerr), MODE(0) | RXACTIVE},	/* MII1_RXERR */
 	{OFFSET(mii1_txen), MODE(0)},			/* MII1_TXEN */
@@ -361,6 +366,7 @@ static struct module_pin_mux mii1_pin_mux[] = {
 	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
 	{-1},
 };
+#endif
 #endif
 
 #ifdef CONFIG_NOR
@@ -450,6 +456,7 @@ static struct module_pin_mux spi0_pin_mux[] = {
 	{-1},
 };
 
+#if 0
 static struct module_pin_mux spi1_pin_mux[] = {
 	{OFFSET(mcasp0_aclkx), MODE(3) | PULLUDEN | RXACTIVE},	/*SPI0_SCLK */
 	{OFFSET(mcasp0_fsx), MODE(3) | PULLUDEN | PULLUP_EN |
@@ -459,6 +466,7 @@ static struct module_pin_mux spi1_pin_mux[] = {
 							RXACTIVE}, /*SPI0_CS0 */
 	{-1},
 };
+#endif
 #endif
 
 /*
@@ -548,7 +556,7 @@ static void set_evm_pin_mux(struct evm_pin_mux *pin_mux,
 			if (pin_mux->device_on == DEV_ON_BASEBOARD)
 				configure_module_pin_mux(pin_mux[i].
 								mod_pin_mux);
-			else if (dghtr_brd_flg == TRUE)
+			else if (dghtr_brd_flg)
 					configure_module_pin_mux(pin_mux[i].
 								mod_pin_mux);
 		}

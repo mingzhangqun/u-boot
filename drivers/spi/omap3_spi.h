@@ -30,7 +30,12 @@
 #ifndef _OMAP3_SPI_H_
 #define _OMAP3_SPI_H_
 
+#ifdef CONFIG_AM335X
+/* In ti814x the following address if for MCSPI0 */
+#define OMAP3_MCSPI1_BASE	0x48030000
+#else
 #define OMAP3_MCSPI1_BASE	0x48098000
+#endif
 #define OMAP3_MCSPI2_BASE	0x4809A000
 #define OMAP3_MCSPI3_BASE	0x480B8000
 #define OMAP3_MCSPI4_BASE	0x480BA000
