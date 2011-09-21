@@ -131,18 +131,6 @@ extern void cpsw_eth_set_mac_addr(const u_int8_t *addr);
 static unsigned char daughter_board_connected = FALSE;
 static volatile int board_id = BASE_BOARD;
 
-static void init_timer(void)
-{
-	/* Reset the Timer */
-	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
-
-	/* Wait until the reset is done */
-	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
-
-	/* Start the Timer */
-	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
-}
-
 int dram_init(void)
 {
 	/* Fill up board info */
@@ -167,11 +155,9 @@ int misc_init_r(void)
 
 static void Data_Macro_Config(int dataMacroNum)
 {
-	u32 BaseAddrOffset;
+	u32 BaseAddrOffset = 0x00;;
 
-	if (dataMacroNum == 0)
-		BaseAddrOffset = 0x00;
-	else if (dataMacroNum == 1)
+	if (dataMacroNum == 1)
 		BaseAddrOffset = 0xA4;
 
 	__raw_writel(((DDR2_RD_DQS<<30)|(DDR2_RD_DQS<<20)
@@ -242,7 +228,7 @@ static void config_vtp(void)
 	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
 }
 
-static void config_emif(void)
+static void config_emif_ddr2(void)
 {
 	u32 i;
 
@@ -283,23 +269,41 @@ static void config_emif(void)
 	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
 	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
-	for(i = 0; i<10000; i++)
-	{
+	for (i = 0; i < 5000; i++) {
 
 	}
 
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
-	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
-
 	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
 	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(EMIF_SDREF,EMIF4_0_SDRAM_REF_CTRL);
+	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
 	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
+
+	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
+	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
 }
 
-static void config_emif_ddr2(void)
+#if (CONFIG_AM335X_EVM_IS_13x13 == 1)
+static void config_emif(void)
 {
 	u32 i;
+
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_ENABLE,
+			VTP0_CTRL_REG);
+	__raw_writel(__raw_readl(VTP0_CTRL_REG) & (~VTP_CTRL_START_EN),
+			VTP0_CTRL_REG);
+	 __raw_writel(__raw_readl(VTP0_CTRL_REG) | VTP_CTRL_START_EN,
+			VTP0_CTRL_REG);
+
+	/* Poll for READY */
+	while ((__raw_readl(VTP0_CTRL_REG) & VTP_CTRL_READY) != VTP_CTRL_READY);
+
+	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_PHY_RESET,
+			EMIF4_0_IODFT_TLGC); /* Reset DDRr PHY */
+	/* Wait while PHY is ready  */
+	while ((__raw_readl(EMIF4_0_SDRAM_STATUS) & DDR_PHY_READY) == 0);
+
+	__raw_writel(__raw_readl(EMIF4_0_IODFT_TLGC) | DDR_FUNCTIONAL_MODE_EN,
+			EMIF4_0_IODFT_TLGC); /* Start Functional Mode */
 
 	/*Program EMIF0 CFG Registers*/
 	__raw_writel(EMIF_READ_LATENCY, EMIF4_0_DDR_PHY_CTRL_1);
@@ -320,17 +324,18 @@ static void config_emif_ddr2(void)
 	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL);
 	__raw_writel(0x00004650, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 
-	for (i = 0; i < 5000; i++) {
+	for(i = 0; i<10000; i++)
+	{
 
 	}
 
-	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
-	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
-	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL);
-	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
-
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG);
 	__raw_writel(EMIF_SDCFG, EMIF4_0_SDRAM_CONFIG2);
+
+	/* __raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL);
+	__raw_writel(EMIF_SDMGT, EMIF0_0_SDRAM_MGMT_CTRL_SHD); */
+	__raw_writel(EMIF_SDREF,EMIF4_0_SDRAM_REF_CTRL);
+	__raw_writel(EMIF_SDREF, EMIF4_0_SDRAM_REF_CTRL_SHADOW);
 }
 
 static void config_am335x_mddr(void)
@@ -360,6 +365,7 @@ static void config_am335x_mddr(void)
 
 	config_emif();	/* vtp enable is here */
 }
+#endif
 
 /*  void DDR2_EMIF_Config(void); */
 static void config_am335x_ddr2(void)
@@ -459,6 +465,18 @@ static void detect_daughter_board_profile(void)
  * Basic board specific setup
  */
 #ifdef CONFIG_AM335X_MIN_CONFIG
+static void init_timer(void)
+{
+	/* Reset the Timer */
+	__raw_writel(0x2, (DM_TIMER2_BASE + TSICR_REG));
+
+	/* Wait until the reset is done */
+	while (__raw_readl(DM_TIMER2_BASE + TIOCP_CFG_REG) & 1);
+
+	/* Start the Timer */
+	__raw_writel(0x1, (DM_TIMER2_BASE + TCLR_REG));
+}
+
 int board_min_init(void)
 {
 	u32 regVal;
@@ -903,7 +921,7 @@ int board_eth_init(bd_t *bis)
  * Command to switch between NAND HW and SW ecc
  *****************************************************************************/
 extern void ti81xx_nand_switch_ecc(nand_ecc_modes_t hardware, int32_t mode);
-static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
+static int do_switch_ecc(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
 {
 	int type = 0;
 	if (argc < 2)
