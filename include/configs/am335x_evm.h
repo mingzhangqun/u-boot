@@ -15,21 +15,10 @@
 
 #define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
 
-/* In the 1st stage we have just 110K, so cut down wherever possible */
-#ifdef CONFIG_AM335X_MIN_CONFIG
-#define CONFIG_CMD_MEMORY	/* for mtest */
-#undef CONFIG_GZIP
-#undef CONFIG_ZLIB
+#include <asm/arch/cpu.h>		/* get chip and board defs */
+#include <asm/arch/hardware.h>
 
-#undef CONFIG_SYS_HUSH_PARSER
-#define CONFIG_CMD_LOADB	/* loadb			*/
-#define CONFIG_CMD_LOADY	/* loady */
-#define CONFIG_SETUP_PLL
-#define CONFIG_AM335X_CONFIG_DDR
 #define CONFIG_AM335X_EVM_IS_13x13	1	/* 1 = 13x13, 0 = 15x15 */
-#define CONFIG_ENV_SIZE			0x400
-#define CONFIG_SYS_MALLOC_LEN		(CONFIG_ENV_SIZE + (8 * 1024))
-#define CONFIG_SYS_PROMPT		"TI-MIN#"
 
 /* set to negative value for no autoboot */
 #define CONFIG_BOOTDELAY		3
@@ -62,8 +51,6 @@
 	 "verify=yes\0" \
 	"bootcmd=mmc init 0; fatload mmc 0 0x80800000 u-boot.bin; go 0x80800000\0"
 #endif
-
-#else /* u-boot Full / Second stage u-boot */
 
 #include <config_cmd_default.h>
 
@@ -194,14 +181,12 @@
 
 
 
-# define CONFIG_CMD_EXT2		/* EXT2 Support			*/
-
-#endif /* CONFIG_AM335X_MIN_CONFIG */
+#define CONFIG_CMD_EXT2
 
 #define CONFIG_DISPLAY_BOARDINFO
 #define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
 						   initial data */
-#define CONFIG_MISC_INIT_R		1
+#define CONFIG_MISC_INIT_R
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_ECHO
@@ -412,4 +397,36 @@ extern unsigned int boot_flash_type;
 #define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
 					 CONFIG_SYS_INIT_RAM_SIZE - \
 					 GENERATED_GBL_DATA_SIZE)
+
+/* Defines for SPL */
+#define CONFIG_SPL
+#define CONFIG_SPL_TEXT_BASE		0x402F0400
+#define CONFIG_SPL_MAX_SIZE		(45 * 1024)
+#define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
+
+#define CONFIG_SPL_BSS_START_ADDR	0x80000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
+
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
+#define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
+#define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
+
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_I2C_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_MMC_SUPPORT
+#define CONFIG_SPL_FAT_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
+
+/*
+ * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
+ * 64 bytes before this address should be set aside for u-boot.img's
+ * header. That is 0x800FFFC0--0x80800000 should not be used for any
+ * other needs.
+ */
+#define CONFIG_SYS_TEXT_BASE		0x80800000 /* 0x80100000 */
 #endif	/* ! __CONFIG_AM335X_EVM_H */

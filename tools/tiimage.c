@@ -71,7 +71,7 @@ static void ti81xximage_print_header(const void *ptr)
 #endif
 }
 
-#if defined(CONFIG_AM335X) && defined(CONFIG_AM335X_MIN_CONFIG)
+#if defined(CONFIG_AM335X)
 static void am335ximage_set_header(void *ptr, struct stat *sbuf, int ifd,
 				struct mkimage_params *params)
 {
@@ -135,7 +135,7 @@ static struct image_type_params tiimage_params = {
 	.check_image_type = tiimage_check_image_types,
 	.verify_header	= tiimage_verify_header,
 	.print_header	= ti81xximage_print_header,
-#if defined(CONFIG_AM335X) && defined(CONFIG_AM335X_MIN_CONFIG)
+#if defined(CONFIG_AM335X)
 	.set_header		= am335ximage_set_header,
 #else
 	.set_header		= ti_dummy_set_header,

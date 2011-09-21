@@ -35,7 +35,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define PRINTD(fmt,args...)
 #endif
 
-#ifndef	CONFIG_AM335X_MIN_CONFIG
+#ifndef	CONFIG_SPL_BUILD
 #define PRINT_FULL(fmt,args...)	printf (fmt ,##args)
 #else
 #define PRINT_FULL(fmt,args...)
@@ -78,16 +78,8 @@ int dram_init(void)
 
 int misc_init_r(void)
 {
-#ifdef CONFIG_AM335X_MIN_CONFIG
-	printf("The 2nd stage U-Boot will now be auto-loaded\n");
-	printf("Please do not interrupt the countdown till TIAM335X_EVM prompt \
-		if 2nd stage is already flashed\n");
-#endif
-
 	return 0;
 }
-
-#ifdef CONFIG_AM335X_CONFIG_DDR
 
 static void Data_Macro_Config(int dataMacroNum)
 {
@@ -324,8 +316,6 @@ static void config_am335x_ddr(void)
 #endif
 }
 
-#endif
-
 /*
  * early system init of muxing and clocks.
  */
@@ -395,7 +385,7 @@ int board_evm_init(void)
 }
 #endif
 
-#ifdef CONFIG_GENERIC_MMC
+#if defined(CONFIG_GENERIC_MMC) && !defined(CONFIG_SPL_BUILD)
 int board_mmc_init(bd_t *bis)
 {
 	omap_mmc_init(0);

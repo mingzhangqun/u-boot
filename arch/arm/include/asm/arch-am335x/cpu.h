@@ -496,6 +496,8 @@ struct gptimer {
 #define SRAM_GPMC_STACK_SIZE		(0x40)
 #endif
 
+#define LOW_LEVEL_SRAM_STACK		(SRAM0_START + SRAM0_SIZE - 4)
+
 /* GPMC related */
 #define GPMC_CONFIG_CS0			(0x60)
 #define GPMC_CONFIG_CS0_BASE		(GPMC_BASE + GPMC_CONFIG_CS0)

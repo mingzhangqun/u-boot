@@ -13,19 +13,9 @@
 # GNU General Public License for more details.
 #
 
-#sinclude $(OBJTREE)/board/$(BOARDDIR)/config.tmp
-ifdef CONFIG_AM335X_MIN_CONFIG
-CONFIG_PRELOADER = 1
-CONFIG_SYS_TEXT_BASE = 0x402F0400
-else
-CONFIG_SYS_TEXT_BASE = 0x80800000
-endif
-
 TI_IMAGE = u-boot.min
 # This will be used by mkimage extension to select header for image
 TI_DEVICE = ti81xx
 # ROM code will load u-boot to this address
 TI_LOAD_ADDR = 0x402f0400
-# TEXT_BASE for the 2 stages is different and comes from the Makefile
-CROSS_COMPILE:= arm-none-linux-gnueabi-
-#LDSCRIPT:=board/ti/am335x/u-boot.lds
+# TEXT_BASE for the 2 stages is different and comes from the the config
