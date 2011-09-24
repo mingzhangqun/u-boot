@@ -28,32 +28,33 @@
 
 #include <fdt.h>
 
-u32 fdt_getprop_u32_default(void *fdt, const char *path, const char *prop,
-				const u32 dflt);
+uint32_t fdt_getprop_u32_default(void *fdt, const char *path, const char *prop,
+				const uint32_t dflt);
 int fdt_chosen(void *fdt, int force);
 int fdt_initrd(void *fdt, ulong initrd_start, ulong initrd_end, int force);
 void do_fixup_by_path(void *fdt, const char *path, const char *prop,
 		      const void *val, int len, int create);
 void do_fixup_by_path_u32(void *fdt, const char *path, const char *prop,
-			  u32 val, int create);
+			  uint32_t val, int create);
 void do_fixup_by_prop(void *fdt,
 		      const char *pname, const void *pval, int plen,
 		      const char *prop, const void *val, int len,
 		      int create);
 void do_fixup_by_prop_u32(void *fdt,
 			  const char *pname, const void *pval, int plen,
-			  const char *prop, u32 val, int create);
+			  const char *prop, uint32_t val, int create);
 void do_fixup_by_compat(void *fdt, const char *compat,
 			const char *prop, const void *val, int len, int create);
 void do_fixup_by_compat_u32(void *fdt, const char *compat,
-			    const char *prop, u32 val, int create);
-int fdt_fixup_memory(void *blob, u64 start, u64 size);
-int fdt_fixup_memory_banks(void *blob, u64 start[], u64 size[], int banks);
+			    const char *prop, uint32_t val, int create);
+int fdt_fixup_memory(void *blob, uint64_t start, uint64_t size);
+int fdt_fixup_memory_banks(void *blob, uint64_t start[], uint64_t size[], int banks);
 void fdt_fixup_ethernet(void *fdt);
 int fdt_find_and_setprop(void *fdt, const char *node, const char *prop,
 			 const void *val, int len, int create);
 void fdt_fixup_qe_firmware(void *fdt);
 
+#ifndef USE_HOSTCC
 #ifdef CONFIG_HAS_FSL_DR_USB
 void fdt_fixup_dr_usb(void *blob, bd_t *bd);
 #else
@@ -85,12 +86,13 @@ int fdt_fixup_nor_flash_size(void *blob);
 
 void fdt_fixup_mtdparts(void *fdt, void *node_info, int node_info_size);
 void fdt_del_node_and_alias(void *blob, const char *alias);
-u64 fdt_translate_address(void *blob, int node_offset, const u32 *in_addr);
+uint64_t fdt_translate_address(void *blob, int node_offset, const uint32_t *in_addr);
 int fdt_node_offset_by_compat_reg(void *blob, const char *compat,
 					phys_addr_t compat_off);
 int fdt_alloc_phandle(void *blob);
 int fdt_create_phandle(void *fdt, int nodeoffset, uint32_t phandle);
 int fdt_add_edid(void *blob, const char *compat, unsigned char *buf);
+#endif
 
 int fdt_verify_alias_address(void *fdt, int anode, const char *alias,
 			      u64 addr);
