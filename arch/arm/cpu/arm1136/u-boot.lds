@@ -20,8 +20,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -50,9 +49,23 @@ SECTIONS
 	. = ALIGN(4);
 	.data : {
 		*(.data)
+	__datarel_start = .;
+		*(.data.rel)
+	__datarelrolocal_start = .;
+		*(.data.rel.ro.local)
+	__datarellocal_start = .;
+		*(.data.rel.local)
+	__datarelro_start = .;
+		*(.data.rel.ro)
 	}
 
 	. = ALIGN(4);
+	__rel_dyn_start = .;
+	.rel.dyn : { *(.rel.dyn) }
+	__rel_dyn_end = .;
+
+	__dynsym_start = .;
+	.dynsym : { *(.dynsym) }
 
 	. = .;
 	__u_boot_cmd_start = .;
@@ -60,26 +73,9 @@ SECTIONS
 	__u_boot_cmd_end = .;
 
 	. = ALIGN(4);
-
-	.rel.dyn : {
-		__rel_dyn_start = .;
-		*(.rel*)
-		__rel_dyn_end = .;
-	}
-
-	.dynsym : {
-		__dynsym_start = .;
-		*(.dynsym)
-	}
-
+	__bss_start = .;
+	.bss (NOLOAD) : { *(.bss) . = ALIGN(4); }
 	_end = .;
-
-	.bss __rel_dyn_start (OVERLAY) : {
-		__bss_start = .;
-		*(.bss)
-		 . = ALIGN(4);
-		__bss_end__ = .;
-	}
 
 	/DISCARD/ : { *(.dynstr*) }
 	/DISCARD/ : { *(.dynamic*) }

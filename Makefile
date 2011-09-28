@@ -886,7 +886,7 @@ am335x_evm_min_sd:	unconfig
 	@echo "#define CONFIG_AM335X"   >>$(obj)include/config.h
 	@echo "#define CONFIG_TI81XX"   >>$(obj)include/config.h
 	@echo "#define CONFIG_SYS_NO_FLASH"    >>$(obj)include/config.h ;
-	@echo "CONFIG_SYS_TEXT_BASE = 0x80700000" >> $(obj)board/ti/am335x/config.tmp;
+	@echo "CONFIG_SYS_TEXT_BASE = 0x80800000" >> $(obj)board/ti/am335x/config.tmp;
 	@if [ "$(findstring _min_,$@)" ] ; then \
 		echo "#define CONFIG_AM335X_MIN_CONFIG"    >>$(obj)include/config.h ; \
 		echo "Setting up AM335X minimal build for 1st stage..." ; \
