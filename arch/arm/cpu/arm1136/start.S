@@ -108,6 +108,22 @@ _bss_end_ofs:
 _end_ofs:
 	.word _end - _start
 
+.globl _datarel_start_ofs
+_datarel_start_ofs:
+	.word __datarel_start - _start
+
+.globl _datarelrolocal_start_ofs
+_datarelrolocal_start_ofs:
+	.word __datarelrolocal_start - _start
+
+.globl _datarellocal_start_ofs
+_datarellocal_start_ofs:
+	.word __datarellocal_start - _start
+
+.globl _datarelro_start_ofs
+_datarelro_start_ofs:
+	.word __datarelro_start - _start
+
 #ifdef CONFIG_USE_IRQ
 /* IRQ stack memory (calculated at run-time) */
 .globl IRQ_STACK_START
