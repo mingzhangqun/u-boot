@@ -15,10 +15,10 @@
 
 #define CONFIG_ARMV7
 
+#define DEBUG
+
 #include <asm/arch/cpu.h>		/* get chip and board defs */
 #include <asm/arch/hardware.h>
-
-#define CONFIG_SYS_ARM_WITHOUT_RELOC	1
 
 #define CONFIG_AM335X_HSMMC_INSTANCE	0	/* 0 - MMC0, 1 - MMC1 */
 
@@ -200,8 +200,6 @@
 #endif /* CONFIG_AM335X_MIN_CONFIG */
 
 #define CONFIG_DISPLAY_BOARDINFO
-#define CONFIG_SYS_GBL_DATA_SIZE	128	/* size in bytes reserved for
-						   initial data */
 #define CONFIG_MISC_INIT_R		1
 #define CONFIG_SYS_AUTOLOAD		"yes"
 #define CONFIG_CMD_CACHE
@@ -232,6 +230,13 @@
 #define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
 #define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
 #define PHYS_DRAM_1_SIZE		0x10000000 /*(0x80000000 / 8) 256 MB */
+
+#define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
+#define CONFIG_SYS_INIT_RAM_ADDR	SRAM0_START
+#define CONFIG_SYS_INIT_RAM_SIZE	SRAM0_SIZE
+#define CONFIG_SYS_INIT_SP_ADDR		(CONFIG_SYS_INIT_RAM_ADDR + \
+					 CONFIG_SYS_INIT_RAM_SIZE - \
+					 GENERATED_GBL_DATA_SIZE)
 
  /* Platform/Board specific defs */
 #define CONFIG_SYS_CLK_FREQ		24000000
@@ -393,9 +398,5 @@
 
 /* Unsupported features */
 #undef CONFIG_USE_IRQ
-
-/* additions for new relocation code, must added to all boards */
-#define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
-#define CONFIG_SYS_INIT_SP_ADDR		((SRAM0_START + SRAM0_SIZE - SRAM_GPMC_STACK_SIZE) - CONFIG_SYS_GBL_DATA_SIZE)
 
  #endif	/* ! __CONFIG_AM335X_EVM_H */

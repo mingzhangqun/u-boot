@@ -134,11 +134,16 @@ static volatile int board_id = BASE_BOARD;
 
 int dram_init(void)
 {
+	gd->ram_size = PHYS_DRAM_1_SIZE;
+
+	return 0;
+}
+
+void dram_init_banksize (void)
+{
 	/* Fill up board info */
 	gd->bd->bi_dram[0].start = PHYS_DRAM_1;
 	gd->bd->bi_dram[0].size = PHYS_DRAM_1_SIZE;
-
-	return 0;
 }
 
 int misc_init_r(void)
@@ -394,7 +399,6 @@ static void config_am335x_ddr(void)
  */
 void s_init(u32 in_ddr)
 {
-	/* Can be removed as A8 comes up with L2 enabled */
 	l2_cache_enable();
 
 	/* WDT1 is already running when the bootloader gets control
