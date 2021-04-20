@@ -120,6 +120,7 @@ config SANDBOX
 	select SPI
 	select SUPPORT_OF_CONTROL
 	select SYSRESET_CMD_POWEROFF
+	select SUPPORT_EXTENSION_SCAN
 	select IRQ
 	imply BITREVERSE
 	select BLOBLIST
@@ -161,6 +162,7 @@ config SANDBOX
 	imply ACPI_PMC_SANDBOX
 	imply CMD_PMC
 	imply CMD_CLONE
+	imply CMD_EXTENSION
 	imply SILENT_CONSOLE
 	imply BOOTARGS_SUBST
 	imply PHY_FIXED
