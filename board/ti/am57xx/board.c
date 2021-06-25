@@ -533,7 +533,6 @@ void do_board_detect(void)
 		ti_i2c_eeprom_am_set("BBONE-AI", "A");
 	};
 
-
 #ifdef CONFIG_SUPPORT_EMMC_BOOT
 	rc = board_bootmode_has_emmc();
 	if (!rc)

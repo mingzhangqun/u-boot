@@ -231,14 +231,6 @@
 			"echo WARNING: Could not determine device tree to use; fi; \0"
 
 #define CONFIG_BOOTCOMMAND \
-	"if test ${dofastboot} -eq 1; then " \
-		"echo Boot fastboot requested, resetting dofastboot ...;" \
-		"setenv dofastboot 0; saveenv;" \
-		FASTBOOT_CMD \
-	"fi;" \
-	"if test ${boot_fit} -eq 1; then "	\
-		"run update_to_fit;"	\
-	"fi;"	\
 	"run read_board_eeprom; " \
 	"run findfdt; " \
 	"setenv mmcdev 0; " \
