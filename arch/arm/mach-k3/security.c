@@ -18,7 +18,7 @@
 #include <spl.h>
 #include <asm/arch/sys_proto.h>
 
-void board_fit_image_post_process(void **p_image, size_t *p_size)
+void ti_secure_image_post_process(void **p_image, size_t *p_size)
 {
 	struct ti_sci_handle *ti_sci = get_ti_sci_handle();
 	struct ti_sci_proc_ops *proc_ops = &ti_sci->ops.proc_ops;
@@ -28,6 +28,9 @@ void board_fit_image_post_process(void **p_image, size_t *p_size)
 
 	image_addr = (uintptr_t)*p_image;
 	image_size = *p_size;
+
+	if (!image_size)
+		return;
 
 	debug("Authenticating image at address 0x%016llx\n", image_addr);
 	debug("Authenticating image of size %d bytes\n", image_size);

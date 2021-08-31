@@ -22,7 +22,6 @@
 #ifdef CONFIG_TARGET_AM654_A53_EVM
 #define CONFIG_SYS_INIT_SP_ADDR         (CONFIG_SPL_TEXT_BASE +	\
 					 CONFIG_SYS_K3_NON_SECURE_MSRAM_SIZE)
-#define CONFIG_SYS_DFU_DATA_BUF_SIZE	0x20000
 #else
 /*
  * Maximum size in memory allocated to the SPL BSS. Keep it as tight as
@@ -30,7 +29,7 @@
  * our memory footprint. The less we use for BSS the more we have available
  * for everything else.
  */
-#define CONFIG_SPL_BSS_MAX_SIZE		0x5000
+#define CONFIG_SPL_BSS_MAX_SIZE		0xc00
 /*
  * Link BSS to be within SPL in a dedicated region located near the top of
  * the MCU SRAM, this way making it available also before relocation. Note
@@ -45,7 +44,6 @@
 /* Configure R5 SPL post-relocation malloc pool in DDR */
 #define CONFIG_SYS_SPL_MALLOC_START	0x84000000
 #define CONFIG_SYS_SPL_MALLOC_SIZE	SZ_16M
-#define CONFIG_SYS_DFU_DATA_BUF_SIZE	0x5000
 #endif
 
 #ifdef CONFIG_SYS_K3_SPL_ATF
