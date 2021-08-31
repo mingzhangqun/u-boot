@@ -31,6 +31,10 @@
 		u-boot,dm-spl;
 	};
 
+	chipid@43000014 {
+		u-boot,dm-spl;
+	};
+
 	mcu_navss {
 		u-boot,dm-spl;
 
@@ -209,9 +213,5 @@
 };
 
 &mcu_fss0_ospi1_pins_default {
-	u-boot,dm-spl;
-};
-
-&chipid {
 	u-boot,dm-spl;
 };
