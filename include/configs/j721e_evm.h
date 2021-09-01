@@ -71,6 +71,8 @@
 		"setenv name_fdt ${default_device_tree};"		\
 		"if test $board_name = J721EX-PM1-SOM; then "		\
 			"setenv name_fdt k3-j721e-proc-board-tps65917.dtb; " \
+		"elif test $board_name = J721EX-PM2-SOM; then "		\
+			"setenv name_fdt k3-j721e-common-proc-board.dtb; " \
 		"elif test $board_name = j721e; then "			\
 			"setenv name_fdt k3-j721e-common-proc-board.dtb; " \
 		"elif test $board_name = j721e-eaik; then "		\
