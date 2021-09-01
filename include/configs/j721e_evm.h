@@ -82,6 +82,9 @@
 		"fi; " \
 		"echo name_fdt=[${name_fdt}] ...;"			\
 		"setenv fdtfile ${name_fdt}\0"				\
+	"eeprom_dump=i2c dev 0; "					\
+		"i2c md 0x50 0x00.2 40; "				\
+		"\0"							\
 	"name_kern=Image\0"						\
 	"console=ttyS2,115200n8\0"					\
 	"args_all=setenv optargs earlycon=ns16550a,mmio32,0x02800000 "	\
