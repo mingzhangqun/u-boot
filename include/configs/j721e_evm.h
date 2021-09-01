@@ -65,9 +65,9 @@
 
 /* U-Boot general configuration */
 #define EXTRA_ENV_J721E_BOARD_SETTINGS					\
-	"echo board_name=[$board_name] ...;"				\
 	"default_device_tree=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0"	\
 	"findfdt="							\
+		"echo board_name=[$board_name] ...;"			\
 		"setenv name_fdt ${default_device_tree};"		\
 		"if test $board_name = J721EX-PM1-SOM; then "		\
 			"setenv name_fdt k3-j721e-proc-board-tps65917.dtb; " \
@@ -84,7 +84,6 @@
 	"console=ttyS2,115200n8\0"					\
 	"args_all=setenv optargs earlycon=ns16550a,mmio32,0x02800000 "	\
 		"${mtdparts}\0"						\
-	"echo debug: [booti ${loadaddr} ${rd_spec} ${fdtaddr}] ... ;"	\
 	"run_kern=booti ${loadaddr} ${rd_spec} ${fdtaddr}\0"
 
 #define PARTS_DEFAULT \
