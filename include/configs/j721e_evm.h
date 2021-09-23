@@ -74,13 +74,13 @@
 		"elif test $board_name = J721EX-PM2-SOM; then "		\
 			"setenv name_fdt k3-j721e-common-proc-board.dtb; " \
 		"elif test $board_name = BBONEAI-64-B0-; then "		\
-			"setenv name_fdt k3-j721e-beagleboneai.dtb; " \
+			"setenv name_fdt k3-j721e-beagleboneai64.dtb; " \
 		"elif test $board_name = j721e; then "			\
 			"setenv name_fdt k3-j721e-common-proc-board.dtb; " \
 		"elif test $board_name = j721e-eaik; then "		\
 			"setenv name_fdt k3-j721e-eaik.dtb; "		\
 		"else " \
-			"setenv name_fdt k3-j721e-beagleboneai.dtb; "	\
+			"setenv name_fdt k3-j721e-beagleboneai64.dtb; "	\
 		"fi; " \
 		"echo name_fdt=[${name_fdt}] ...;"			\
 		"setenv fdtfile ${name_fdt}\0"				\
