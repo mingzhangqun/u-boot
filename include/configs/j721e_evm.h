@@ -85,11 +85,11 @@
 		"echo name_fdt=[${name_fdt}] ...;"			\
 		"setenv fdtfile ${name_fdt}\0"				\
 	"eeprom_dump=i2c dev 0; "					\
-		"i2c md 0x50 0x00.1 40; "				\
+		"i2c md 0x50 0x00.1 20; "				\
 		"\0"							\
 	"eeprom_bbai=i2c dev 0; "					\
-		"i2c md 0x50 0x00.1 40; "				\
-		"i2c mw 0x50 0x00.1 00; "				\
+		"i2c md 0x50 0x00.1 20; "				\
+		"i2c mw 0x50 0x00.1 aa; "				\
 		"i2c mw 0x50 0x01.1 55; "				\
 		"i2c mw 0x50 0x02.1 33; "				\
 		"i2c mw 0x50 0x03.1 ee; "				\
@@ -113,7 +113,7 @@
 		"i2c mw 0x50 0x15.1 42; "				\
 		"i2c mw 0x50 0x16.1 30; "				\
 		"i2c mw 0x50 0x17.1 2d; "				\
-		"i2c md 0x50 0x00.1 40; "				\
+		"i2c md 0x50 0x00.1 20; "				\
 		"\0"							\
 	"name_kern=Image\0"						\
 	"console=ttyS2,115200n8\0"					\
