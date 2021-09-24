@@ -72,7 +72,7 @@
 		"if test $board_name = J721EX-PM1-SOM; then "		\
 			"setenv name_fdt k3-j721e-proc-board-tps65917.dtb; " \
 		"elif test $board_name = J721EX-PM2-SOM; then "		\
-			"setenv name_fdt k3-j721e-common-proc-board.dtb; " \
+			"setenv name_fdt k3-j721e-beagleboneai64.dtb; " \
 		"elif test $board_name = BBONEAI-64-B0-; then "		\
 			"setenv name_fdt k3-j721e-beagleboneai64.dtb; " \
 		"elif test $board_name = j721e; then "			\
@@ -85,7 +85,35 @@
 		"echo name_fdt=[${name_fdt}] ...;"			\
 		"setenv fdtfile ${name_fdt}\0"				\
 	"eeprom_dump=i2c dev 0; "					\
-		"i2c md 0x50 0x00.2 40; "				\
+		"i2c md 0x50 0x00.1 40; "				\
+		"\0"							\
+	"eeprom_bbai=i2c dev 0; "					\
+		"i2c md 0x50 0x00.1 40; "				\
+		"i2c mw 0x50 0x00.1 00; "				\
+		"i2c mw 0x50 0x01.1 55; "				\
+		"i2c mw 0x50 0x02.1 33; "				\
+		"i2c mw 0x50 0x03.1 ee; "				\
+		"i2c mw 0x50 0x04.1 01; "				\
+		"i2c mw 0x50 0x05.1 37; "				\
+		"i2c mw 0x50 0x06.1 00; "				\
+		"i2c mw 0x50 0x07.1 10; "				\
+		"i2c mw 0x50 0x08.1 2e; "				\
+		"i2c mw 0x50 0x09.1 00; "				\
+		"i2c mw 0x50 0x0a.1 42; "				\
+		"i2c mw 0x50 0x0b.1 42; "				\
+		"i2c mw 0x50 0x0c.1 4f; "				\
+		"i2c mw 0x50 0x0d.1 4e; "				\
+		"i2c mw 0x50 0x0e.1 45; "				\
+		"i2c mw 0x50 0x0f.1 41; "				\
+		"i2c mw 0x50 0x10.1 49; "				\
+		"i2c mw 0x50 0x11.1 2d; "				\
+		"i2c mw 0x50 0x12.1 36; "				\
+		"i2c mw 0x50 0x13.1 34; "				\
+		"i2c mw 0x50 0x14.1 2d; "				\
+		"i2c mw 0x50 0x15.1 42; "				\
+		"i2c mw 0x50 0x16.1 30; "				\
+		"i2c mw 0x50 0x17.1 2d; "				\
+		"i2c md 0x50 0x00.1 40; "				\
 		"\0"							\
 	"name_kern=Image\0"						\
 	"console=ttyS2,115200n8\0"					\
