@@ -13,7 +13,7 @@ make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig
 make ARCH=arm -j4 CROSS_COMPILE=arm-linux-gnueabihf-
 make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- savedefconfig
 cp -v defconfig ./configs/j721e_evm_r5_defconfig
-#ls -lh ./tiboot3.bin
+ls -lh ./tiboot3.bin
 
 make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- distclean
 make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- j721e_evm_a72_defconfig
