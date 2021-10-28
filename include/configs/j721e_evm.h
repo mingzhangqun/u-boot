@@ -87,6 +87,9 @@
 	"eeprom_dump=i2c dev 0; "					\
 		"i2c md 0x50 0x00.1 20; "				\
 		"\0"							\
+	"eeprom_dump_51=i2c dev 0; "					\
+		"i2c md 0x50 0x00.1 20; "				\
+		"\0"							\
 	"eeprom_bbai=i2c dev 0; "					\
 		"i2c md 0x50 0x00.1 20; "				\
 		"i2c mw 0x50 0x00.1 aa; "				\
@@ -114,6 +117,34 @@
 		"i2c mw 0x50 0x16.1 30; "				\
 		"i2c mw 0x50 0x17.1 2d; "				\
 		"i2c md 0x50 0x00.1 20; "				\
+		"\0"							\
+	"eeprom_bbai_51=i2c dev 0; "					\
+		"i2c md 0x51 0x00.1 20; "				\
+		"i2c mw 0x51 0x00.1 aa; "				\
+		"i2c mw 0x51 0x01.1 55; "				\
+		"i2c mw 0x51 0x02.1 33; "				\
+		"i2c mw 0x51 0x03.1 ee; "				\
+		"i2c mw 0x51 0x04.1 01; "				\
+		"i2c mw 0x51 0x05.1 37; "				\
+		"i2c mw 0x51 0x06.1 00; "				\
+		"i2c mw 0x51 0x07.1 10; "				\
+		"i2c mw 0x51 0x08.1 2e; "				\
+		"i2c mw 0x51 0x09.1 00; "				\
+		"i2c mw 0x51 0x0a.1 42; "				\
+		"i2c mw 0x51 0x0b.1 42; "				\
+		"i2c mw 0x51 0x0c.1 4f; "				\
+		"i2c mw 0x51 0x0d.1 4e; "				\
+		"i2c mw 0x51 0x0e.1 45; "				\
+		"i2c mw 0x51 0x0f.1 41; "				\
+		"i2c mw 0x51 0x10.1 49; "				\
+		"i2c mw 0x51 0x11.1 2d; "				\
+		"i2c mw 0x51 0x12.1 36; "				\
+		"i2c mw 0x51 0x13.1 34; "				\
+		"i2c mw 0x51 0x14.1 2d; "				\
+		"i2c mw 0x51 0x15.1 42; "				\
+		"i2c mw 0x51 0x16.1 30; "				\
+		"i2c mw 0x51 0x17.1 2d; "				\
+		"i2c md 0x51 0x00.1 20; "				\
 		"\0"							\
 	"emmc_boot0_bbai=mmc partconf 0 1 1 1; "			\
 		"mmc dev 0 1; "						\
