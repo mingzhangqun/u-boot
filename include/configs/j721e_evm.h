@@ -115,6 +115,19 @@
 		"i2c mw 0x50 0x17.1 2d; "				\
 		"i2c md 0x50 0x00.1 20; "				\
 		"\0"							\
+	"emmc_boot0_bbai=mmc partconf 0 1 1 1; "			\
+		"mmc dev 0 1; "						\
+		"mmc erase 0 0x2400; "					\
+		"fatload mmc 1 ${loadaddr} tiboot3.bin; "		\
+		"mmc write ${loadaddr} 0x0 0x300; "			\
+		"fatload mmc 1 ${loadaddr} tispl.bin; "			\
+		"mmc write ${loadaddr} 0x300 0x600; "			\
+		"fatload mmc 1 ${loadaddr} u-boot.img; "		\
+		"mmc write ${loadaddr} 0x900 0x1000; "			\
+		"fatload mmc 1 ${loadaddr} sysfw.itb; "			\
+		"mmc write ${loadaddr} 0x1900 0x300; "			\
+		"mmc bootbus 0 2 0 0; "					\
+		"\0"							\
 	"name_kern=Image\0"						\
 	"console=ttyS2,115200n8\0"					\
 	"args_all=setenv optargs earlycon=ns16550a,mmio32,0x02800000 "	\
