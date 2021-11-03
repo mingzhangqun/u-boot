@@ -88,7 +88,7 @@
 		"i2c md 0x50 0x00.1 20; "				\
 		"\0"							\
 	"eeprom_dump_51=i2c dev 0; "					\
-		"i2c md 0x50 0x00.1 20; "				\
+		"i2c md 0x51 0x00.1 20; "				\
 		"\0"							\
 	"eeprom_bbai=i2c dev 0; "					\
 		"i2c md 0x50 0x00.1 20; "				\
