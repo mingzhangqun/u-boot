@@ -243,8 +243,8 @@
 /* U-Boot MMC-specific configuration */
 #define EXTRA_ENV_J721E_BOARD_SETTINGS_MMC				\
 	"boot=mmc\0"							\
-	"mmcdev=1\0"							\
-	"bootpart=1:2\0"						\
+	"mmcdev=0\0"							\
+	"bootpart=0:2\0"						\
 	"bootdir=/boot\0"						\
 	EXTRA_ENV_R5_SPL_RPROC_FW_ARGS_MMC				\
 	"rd_spec=-\0"							\
